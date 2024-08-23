@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator with UTM Parameters</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input[type="url"], input[type="text"], input[type="color"], input[type="number"] {
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #result {
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+        }
+        #qr-code {
+            margin-top: 20px;
+        }
+        #theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #ffd700;
+            color: #006400;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        #theme-toggle:hover {
+            background-color: #f7c600;
+        }
+    </style>
+</head>
+<body>
+    <button id="theme-toggle">Switch to Dark Theme</button>
+    <div class="container">
+        <h1>Alex Merced's Free QR Code Generator</h1>
+        <div><center>
+          <a href="https://alexmerced.com"> Follow Alex Merced on twitter, youtube, linkedin and subscribe to his podcasts</a>
+        </center></div>
+        <form id="qr-form">
+            <label for="url">Base URL:</label>
+            <input type="url" id="url" placeholder="Enter URL" required>
+
+            <label for="utm-source">UTM Source:</label>
+            <input type="text" id="utm-source" placeholder="Enter UTM Source">
+
+            <label for="utm-medium">UTM Medium:</label>
+            <input type="text" id="utm-medium" placeholder="Enter UTM Medium">
+
+            <label for="utm-campaign">UTM Campaign:</label>
+            <input type="text" id="utm-campaign" placeholder="Enter UTM Campaign">
+
+            <label for="utm-term">UTM Term (Optional):</label>
+            <input type="text" id="utm-term" placeholder="Enter UTM Term">
+
+            <label for="utm-content">UTM Content (Optional):</label>
+            <input type="text" id="utm-content" placeholder="Enter UTM Content">
+
+            <label for="qr-color">QR Code Foreground Color:</label>
+            <input type="color" id="qr-color" value="#000000">
+
+            <label for="qr-bg-color">QR Code Background Color:</label>
+            <input type="color" id="qr-bg-color" value="#ffffff">
+
+            <label for="qr-size">QR Code Size (px):</label>
+            <input type="number" id="qr-size" value="500" min="100" max="1000">
+
+            <button type="submit">Generate QR Code</button>
+        </form>
+
+        <div id="result">
+            <div id="qr-code"></div>
+            <a id="download-link" download="qr-code.png"><button>Download QR Code</button></a>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        let isDarkTheme = false;
+
+        themeToggle.addEventListener('click', () => {
+            isDarkTheme = !isDarkTheme;
+            document.body.style.backgroundColor = isDarkTheme ? '#333' : '#f4f4f4';
+            document.body.style.color = isDarkTheme ? '#f4f4f4' : '#333';
+            document.querySelector('.container').style.backgroundColor = isDarkTheme ? '#444' : 'white';
+            document.querySelector('.container').style.color = isDarkTheme ? '#f4f4f4' : '#333';
+            themeToggle.textContent = isDarkTheme ? 'Switch to Light Theme' : 'Switch to Dark Theme';
+            themeToggle.style.backgroundColor = isDarkTheme ? '#006400' : '#ffd700';
+            themeToggle.style.color = isDarkTheme ? '#ffd700' : '#006400';
+        });
+
+        document.getElementById('qr-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const baseUrl = document.getElementById('url').value;
+            const utmSource = document.getElementById('utm-source').value;
+            const utmMedium = document.getElementById('utm-medium').value;
+            const utmCampaign = document.getElementById('utm-campaign').value;
+            const utmTerm = document.getElementById('utm-term').value;
+            const utmContent = document.getElementById('utm-content').value;
+
+            let fullUrl = `${baseUrl}?utm_source=${encodeURIComponent(utmSource)}&utm_medium=${encodeURIComponent(utmMedium)}&utm_campaign=${encodeURIComponent(utmCampaign)}`;
+            
+            if (utmTerm) {
+                fullUrl += `&utm_term=${encodeURIComponent(utmTerm)}`;
+            }
+            if (utmContent) {
+                fullUrl += `&utm_content=${encodeURIComponent(utmContent)}`;
+            }
+
+            const qrColor = document.getElementById('qr-color').value;
+            const qrBgColor = document.getElementById('qr-bg-color').value;
+            const qrSize = parseInt(document.getElementById('qr-size').value, 10);
+
+            document.getElementById('qr-code').innerHTML = '';
+
+            const qrcode = new QRCode(document.getElementById('qr-code'), {
+                text: fullUrl,
+                width: qrSize,
+                height: qrSize,
+                colorDark: qrColor,
+                colorLight: qrBgColor,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            setTimeout(() => {
+                const canvas = document.querySelector('#qr-code canvas');
+                const dataUrl = canvas.toDataURL("image/png");
+                const downloadLink = document.getElementById('download-link');
+                downloadLink.href = dataUrl;
+                document.getElementById('result').style.display = 'block';
+            }, 500);
+        });
+    </script>
+</body>
+</html>
