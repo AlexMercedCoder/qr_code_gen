@@ -116,6 +116,7 @@
         </form>
 
         <div id="result">
+            <input type="text" width="70%" id="result-url" placeholder="complete url">
             <div id="qr-code"></div>
             <a id="download-link" download="qr-code.png"><button>Download QR Code</button></a>
         </div>
@@ -161,6 +162,7 @@
             const qrSize = parseInt(document.getElementById('qr-size').value, 10);
 
             document.getElementById('qr-code').innerHTML = '';
+            document.querySelector("#result-url").value(fullUrl)
 
             const qrcode = new QRCode(document.getElementById('qr-code'), {
                 text: fullUrl,
