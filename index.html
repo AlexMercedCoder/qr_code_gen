@@ -162,7 +162,7 @@
             const qrSize = parseInt(document.getElementById('qr-size').value, 10);
 
             document.getElementById('qr-code').innerHTML = '';
-            document.querySelector("#result-url").value(fullUrl)
+            document.querySelector("#result-url").value = fullUrl
 
             const qrcode = new QRCode(document.getElementById('qr-code'), {
                 text: fullUrl,
