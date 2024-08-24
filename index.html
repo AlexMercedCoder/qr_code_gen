@@ -88,13 +88,13 @@
             <label for="url">Base URL:</label>
             <input type="url" id="url" placeholder="Enter URL" required>
 
-            <label for="utm-source">UTM Source:</label>
+            <label for="utm-source">UTM Source (Optional):</label>
             <input type="text" id="utm-source" placeholder="Enter UTM Source">
 
-            <label for="utm-medium">UTM Medium:</label>
+            <label for="utm-medium">UTM Medium (Optional):</label>
             <input type="text" id="utm-medium" placeholder="Enter UTM Medium">
 
-            <label for="utm-campaign">UTM Campaign:</label>
+            <label for="utm-campaign">UTM Campaign (Optional):</label>
             <input type="text" id="utm-campaign" placeholder="Enter UTM Campaign">
 
             <label for="utm-term">UTM Term (Optional):</label>
@@ -139,6 +139,7 @@
         });
 
         document.getElementById('qr-form').addEventListener('submit', function(event) {
+            try{
             event.preventDefault();
 
             const baseUrl = document.getElementById('url').value;
@@ -148,13 +149,17 @@
             const utmTerm = document.getElementById('utm-term').value;
             const utmContent = document.getElementById('utm-content').value;
 
-            let fullUrl = `${baseUrl}?utm_source=${encodeURIComponent(utmSource)}&utm_medium=${encodeURIComponent(utmMedium)}&utm_campaign=${encodeURIComponent(utmCampaign)}`;
-            
-            if (utmTerm) {
-                fullUrl += `&utm_term=${encodeURIComponent(utmTerm)}`;
-            }
-            if (utmContent) {
-                fullUrl += `&utm_content=${encodeURIComponent(utmContent)}`;
+            let fullUrl = baseUrl;
+            let params = [];
+
+            if (utmSource) params.push(`utm_source=${encodeURIComponent(utmSource)}`);
+            if (utmMedium) params.push(`utm_medium=${encodeURIComponent(utmMedium)}`);
+            if (utmCampaign) params.push(`utm_campaign=${encodeURIComponent(utmCampaign)}`);
+            if (utmTerm) params.push(`utm_term=${encodeURIComponent(utmTerm)}`);
+            if (utmContent) params.push(`utm_content=${encodeURIComponent(utmContent)}`);
+
+            if (params.length > 0) {
+                fullUrl += `?${params.join('&')}`;
             }
 
             const qrColor = document.getElementById('qr-color').value;
@@ -180,6 +185,9 @@
                 downloadLink.href = dataUrl;
                 document.getElementById('result').style.display = 'block';
             }, 500);
+            } catch(error){
+                alert(error.message)
+            }
         });
     </script>
 </body>
